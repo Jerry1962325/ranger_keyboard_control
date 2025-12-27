@@ -21,6 +21,7 @@ setup(
     entry_points={
         'console_scripts': [
             'keyboard_control = ranger_keyboard_control.keyboard_control_node:main',
+            'ranger_control = ranger_keyboard_control.angle_control_node:main',
         ],
     },
 )
