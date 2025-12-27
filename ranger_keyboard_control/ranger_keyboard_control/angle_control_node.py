@@ -178,7 +178,7 @@ class AngleControlNode(Node):
         print(f"      6=200° 7=240° 8=280° 9=320° 0=360°")
         print(f"  {Colors.GREEN}← →{Colors.RESET}: 微调角度 ±{self.angle_step}°")
         print(f"  {Colors.GREEN}↑ ↓{Colors.RESET}: 调整速度 ±{self.speed_step} m/s")
-        print(f"  {Colors.GREEN}空格{Colors.RESET}: 开始/停止移动")
+        print(f"  {Colors.GREEN}空格{Colors.RESET}: 开始/停止移动 (旋转模式下停止)")
         print(f"  {Colors.GREEN}R{Colors.RESET}: 原地旋转模式 (← → 控制方向)")
         print(f"  {Colors.GREEN}Q/ESC{Colors.RESET}: 退出")
         print()
@@ -221,10 +221,12 @@ class AngleControlNode(Node):
                 if key in ['q', 'Q', '\x03']:  # q, Ctrl+C
                     break
                 
-                # 空格 - 开始/停止 (仅非旋转模式)
+                # 空格 - 开始/停止
                 elif key == ' ':
                     if not self.rotate_mode:
                         self.is_moving = not self.is_moving
+                    else:
+                        self.rotate_direction = 0
                 
                 # R - 旋转模式
                 elif key in ['r', 'R']:
