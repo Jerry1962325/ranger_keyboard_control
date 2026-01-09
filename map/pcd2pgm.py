@@ -4,7 +4,7 @@ import matplotlib.pyplot as plt
 import sys
 import os
 
-def pcd2pgm(pcd_path, output_name="map", resolution=0.05, z_min=-0.5, z_max=1.0):
+def pcd2pgm(pcd_path, output_name="map", resolution=0.02, z_min=0.0, z_max=1.0):
     print(f"正在读取点云: {pcd_path}")
     pcd = o3d.io.read_point_cloud(pcd_path)
     points = np.asarray(pcd.points)
