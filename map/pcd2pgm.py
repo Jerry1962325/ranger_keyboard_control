@@ -4,7 +4,7 @@ import matplotlib.pyplot as plt
 import sys
 import os
 
-def pcd2pgm(pcd_path, output_name="map", resolution=0.02, z_min=0.0, z_max=1.0):
+def pcd2pgm(pcd_path, output_name="map", resolution=0.02, z_min=0, z_max=1.0):
     print(f"正在读取点云: {pcd_path}")
     pcd = o3d.io.read_point_cloud(pcd_path)
     points = np.asarray(pcd.points)
@@ -15,10 +15,25 @@ def pcd2pgm(pcd_path, output_name="map", resolution=0.02, z_min=0.0, z_max=1.0):
     # 只保留地面以上一定高度，且低于天花板的点
     mask = (points[:, 2] > z_min) & (points[:, 2] < z_max)
     points = points[mask]
-    print(f"过滤后点云数量: {len(points)}")
+    print(f"高度过滤后点云数量: {len(points)}")
 
     if len(points) == 0:
         print("错误: 过滤后没有剩余点！请检查 z_min 和 z_max 参数。")
+        return
+
+    # 1.5 半径滤波 (去除杂点)
+    # 用户指定参数：nb_points=120, radius=0.3
+    print("正在进行强度半径滤波 (用户指定参数)...")
+    pcd_filtered = o3d.geometry.PointCloud()
+    pcd_filtered.points = o3d.utility.Vector3dVector(points)
+    
+    cl, ind = pcd_filtered.remove_radius_outlier(nb_points=120, radius=0.3)
+    pcd_filtered = pcd_filtered.select_by_index(ind)
+    points = np.asarray(pcd_filtered.points)
+    print(f"半径滤波后点云数量: {len(points)}")
+
+    if len(points) == 0:
+        print("错误: 半径滤波后没有剩余点！可能是滤波太严格。")
         return
 
     # 2. 计算地图边界
